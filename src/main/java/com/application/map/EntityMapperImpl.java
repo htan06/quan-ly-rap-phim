@@ -23,11 +23,10 @@ public class EntityMapperImpl implements EntityMapper {
         entityMetaData = new HashMap<>();
     }
 
-    @Override
-    public void registry(Class<?> clazz) {
+    private void registry(Class<?> clazz) {
         if (entityMetaData.containsKey(clazz.getSimpleName()) || clazz.getDeclaredAnnotation(Entity.class) == null) return;
 
-        String entityName = clazz.getName();
+        String entityName = clazz.getSimpleName();
         List<FieldMetadata> fieldMetadata = new ArrayList<>();
 
         for (Field f : clazz.getDeclaredFields()) {
