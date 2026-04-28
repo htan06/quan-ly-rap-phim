@@ -24,21 +24,24 @@ public class EntityMapperImpl implements EntityMapper {
     }
 
     private void registry(Class<?> clazz) {
-        if (entityMetaData.containsKey(clazz.getSimpleName()) || clazz.getDeclaredAnnotation(Entity.class) == null) return;
+        if (clazz == null || entityMetaData.containsKey(clazz.getSimpleName()) || clazz.getDeclaredAnnotation(Entity.class) == null) return;
 
         String entityName = clazz.getSimpleName();
         List<FieldMetadata> fieldMetadata = new ArrayList<>();
 
-        for (Field f : clazz.getDeclaredFields()) {
-            Column c = f.getDeclaredAnnotation(Column.class);
-            if (c == null) continue;
-            f.setAccessible(true);
-            fieldMetadata.add(new FieldMetadata(c.name(), f));
+        while (clazz != null) {
+            for (Field f : clazz.getDeclaredFields()) {
+                Column c = f.getDeclaredAnnotation(Column.class);
+                if (c == null) continue;
+                f.setAccessible(true);
+                fieldMetadata.add(new FieldMetadata(c.name(), f));
+            }
+            clazz = clazz.getSuperclass();
         }
 
         EntityMetaData metaData = new EntityMetaData(entityName, fieldMetadata);
 
-        entityMetaData.put(clazz.getSimpleName(), metaData);
+        entityMetaData.put(entityName, metaData);
     }
 
     @Override
