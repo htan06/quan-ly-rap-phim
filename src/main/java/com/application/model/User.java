@@ -1,33 +1,30 @@
 package com.application.model;
 
-import com.application.map.annotation.Column;
-import com.application.map.annotation.Entity;
 import com.application.model.enums.UserStatus;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.UUID;
 
 import java.util.Set;
 
-@Entity
-public class User extends BaseEntity<UUID> {
-    @Column(name = "first_name")
+@Setter
+@Getter
+@Builder
+public class User extends BaseEntity<Long> {
     private String firstName;
 
-    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
     private String email;
 
-    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "status")
     private UserStatus status;
 
-    @Column(name = "username")
     private String username;
 
-    @Column(name = "password")
     private String password;
 
     private Set<Role> roles;

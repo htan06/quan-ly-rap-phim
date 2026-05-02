@@ -1,19 +1,20 @@
 package com.application.service;
 
-import com.application.dao.UserDao;
+import com.application.dto.CreateStaffDTO;
+import com.application.dto.UpdateStaffInfoDTO;
 import com.application.model.User;
+import com.application.model.enums.UserStatus;
 
 import java.util.List;
 
-public class UserService {
-    private UserDao userDao;
+public interface UserService {
+    void createStaff(CreateStaffDTO createStaff);
 
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
-    }
+    void changePassword(String username, String newPassword);
 
-    public void printUsers() {
-        List<User> users = userDao.getListUser();
-        users.forEach(System.out::println);
-    }
+    User getUserByUsername(String username);
+
+    void updateStatusUser(String username, UserStatus status);
+
+    void updateUserInfo(UpdateStaffInfoDTO updateStaffInfo);
 }

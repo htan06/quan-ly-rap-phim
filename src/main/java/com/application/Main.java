@@ -2,26 +2,17 @@ package com.application;
 
 import com.application.dao.DatabaseConnection;
 import com.application.dao.UserDao;
-import com.application.model.User;
-import com.application.map.EntityMapper;
-import com.application.map.EntityMapperImpl;
-import com.application.model.enums.UserStatus;
-import com.application.service.UserService;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import com.application.service.impl.UserServiceImpl;
 
 public class Main {
     public static void main(String[] args) {
 
-        EntityMapper entityMapper = EntityMapperImpl.getInstance();
         DatabaseConnection databaseConnection = DatabaseConnection.getInstance();
-        UserDao userDao = new UserDao(databaseConnection.getConnection(), entityMapper);
-        UserService userService = new UserService(userDao);
+        UserDao userDao = new UserDao(databaseConnection.getConnection());
+        UserServiceImpl userService = new UserServiceImpl(userDao);
 
-        userService.printUsers();
+        System.out.println(userService.getUserByUsername("tanle"));
+//        userService.createStaff(new CreateStaffDTO("tann", "lee", "email", "phoneNumber", "tan2", "aaa"));
+
     }
 }
