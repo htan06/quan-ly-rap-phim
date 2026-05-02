@@ -79,7 +79,7 @@ public class ThongKeDoanhThu extends JFrame{
 		String header[] = {"Tên phim", "Vé bán", "Doanh thu vé", "Tổng"};
 		model = new DefaultTableModel(header, 0);
 		model.addRow(new Object[] {"mua do", 120, 1200000L, 2000000L});
-//      ↑ int  ↑ long     ↑ long
+
 		JTable table = new JTable(model); 
 		table.setBorder(null); 
 		table.getTableHeader().setBorder(null);
