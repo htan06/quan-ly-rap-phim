@@ -1,15 +1,16 @@
 package com.application.dao;
 
 import com.application.entity.Room;
+import com.application.entity.Seat;
 import com.application.entity.enums.RoomStatus;
 import com.application.entity.enums.RoomType;
+import com.application.entity.enums.SeatStatus;
+import com.application.entity.enums.SeatType;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class RoomDao {
@@ -57,12 +58,14 @@ public class RoomDao {
     }
 
     public List<Room> findAll() {
-        String sql ="SELECT * FROM rooms;";
+        String sql =
+                "SELECT r.*, " +
+                        "s.id AS seat_id, s.name AS seat_name, s.status AS seat_status, s.type AS seat_type " +
+                        "FROM rooms r " +
+                        "LEFT JOIN seats s ON r.id = s.room_id";
 
         try (Statement statement = connectionDB.createStatement()) {
-
             ResultSet rows = statement.executeQuery(sql);
-
             return mapResultToObj(rows);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -70,15 +73,23 @@ public class RoomDao {
     }
 
     public Optional<Room> findById(Integer id) {
-        String sql = "SELECT * FROM rooms WHERE id = ?;";
+        String sql =
+                "SELECT r.*, " +
+                        "s.id AS seat_id, s.name AS seat_name, s.status AS seat_status, s.type AS seat_type " +
+                        "FROM rooms r " +
+                        "LEFT JOIN seats s ON r.id = s.room_id " +
+                        "WHERE r.id = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
             statement.setInt(1, id);
 
             ResultSet rows = statement.executeQuery();
-
             List<Room> rooms = mapResultToObj(rows);
-            return (rooms.isEmpty()) ? Optional.empty() : Optional.of(rooms.getFirst());
+
+            return rooms.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(rooms.getFirst());
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +102,6 @@ public class RoomDao {
             statement.setString(1, room.getName());
             statement.setString(2, room.getRoomType().name());
             statement.setInt(3, room.getCapacity());
-            statement.setString(4, room.getStatus().name());
 
             int rows = statement.executeUpdate();
             if (rows == 0) {
@@ -119,21 +129,43 @@ public class RoomDao {
     }
 
     private List<Room> mapResultToObj(ResultSet rows) throws SQLException {
-        List<Room> rooms = new ArrayList<>();
+        Map<Integer, Room> roomMap = new LinkedHashMap<>();
+
         while (rows.next()) {
-            rooms.add(
-                    Room.builder()
-                            .id(rows.getInt("id"))
-                            .name(rows.getString("name"))
-                            .roomType(RoomType.valueOf(rows.getString("room_type")))
-                            .capacity(rows.getInt("capacity"))
-                            .status(RoomStatus.valueOf(rows.getString("status")))
-                            .createdAt(rows.getTimestamp("created_at"))
-                            .updatedAt(rows.getTimestamp("updated_at"))
-                            .build()
-            );
+
+            Integer roomId = rows.getInt("id");
+
+            Room room = roomMap.get(roomId);
+
+            if (room == null) {
+                room = Room.builder()
+                        .id(roomId)
+                        .name(rows.getString("name"))
+                        .roomType(RoomType.valueOf(rows.getString("room_type")))
+                        .capacity(rows.getInt("capacity"))
+                        .status(RoomStatus.valueOf(rows.getString("status")))
+                        .createdAt(rows.getTimestamp("created_at"))
+                        .updatedAt(rows.getTimestamp("updated_at"))
+                        .seats(new ArrayList<>())
+                        .build();
+
+                roomMap.put(roomId, room);
+            }
+
+            // seat mapping
+            Long seatId = rows.getLong("seat_id");
+            if (!rows.wasNull()) {
+                Seat seat = Seat.builder()
+                        .id(seatId)
+                        .name(rows.getString("seat_name"))
+                        .status(SeatStatus.valueOf(rows.getString("seat_status")))
+                        .type(SeatType.valueOf(rows.getString("seat_type")))
+                        .build();
+
+                room.getSeats().add(seat);
+            }
         }
 
-        return rooms;
+        return new ArrayList<>(roomMap.values());
     }
 }

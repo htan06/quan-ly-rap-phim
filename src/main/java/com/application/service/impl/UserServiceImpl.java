@@ -9,9 +9,21 @@ import com.application.utils.ValidData;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
+
+    @Override
+    public List<User> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public User findById(Long id) {
+        return null;
+    }
 
     @Override
     public User getUserByUsername(String username) {

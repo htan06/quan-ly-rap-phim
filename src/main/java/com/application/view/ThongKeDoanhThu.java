@@ -220,10 +220,6 @@ public class ThongKeDoanhThu extends JFrame implements ActionListener {
 		return pnlInfo;
 	}
 
-	public static void main(String[] args) {
-		new ThongKeDoanhThu().setVisible(true);
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();

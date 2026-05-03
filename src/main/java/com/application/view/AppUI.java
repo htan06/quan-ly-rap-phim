@@ -1,55 +1,73 @@
 package com.application.view;
 
-import com.application.service.AuthenticationService;
-import com.application.service.BookingService;
-import com.application.service.MovieService;
-import com.application.service.UserService;
-
-import javax.swing.*;
+import com.application.service.*;
+import com.application.view.controller.*;
 
 public class AppUI {
+
+    private AppController appController;
+    private NavigationController navigationController;
+
     private final BookingService bookingService;
     private final UserService userService;
     private final MovieService movieService;
     private final AuthenticationService authenticationService;
+    private final SessionService sessionService;
+    private final ShowTimeService showTimeService;
+    private final SeatService seatService;
+    private final RoomService roomService;
+    private final MembershipService membershipService;
+    private final InvoiceService invoiceService;
 
-    private JFrame currentFrame;
-
+    // Constructor đầy đủ
     public AppUI(BookingService bookingService,
                  UserService userService,
                  MovieService movieService,
-                 AuthenticationService authenticationService) {
+                 AuthenticationService authenticationService,
+                 SessionService sessionService,
+                 ShowTimeService showTimeService,
+                 SeatService seatService,
+                 RoomService roomService,
+                 MembershipService membershipService,
+                 InvoiceService invoiceService) {
 
         this.bookingService = bookingService;
         this.userService = userService;
         this.movieService = movieService;
         this.authenticationService = authenticationService;
+        this.sessionService = sessionService;
+        this.showTimeService = showTimeService;
+        this.seatService = seatService;
+        this.roomService = roomService;
+        this.membershipService = membershipService;
+        this.invoiceService = invoiceService;
     }
 
     public void start() {
-        SwingUtilities.invokeLater(() -> {
-            openLoginUI();
-        });
+        initializeControllers();
+        appController.initializeApp();
     }
 
-    // ===== Navigation =====
+    private void initializeControllers() {
+        // Đúng thứ tự với NavigationController constructor:
+        // MovieService, ShowTimeService, SeatService, BookingService, AuthService, SessionService
+        navigationController = new NavigationController(
+                movieService,
+                showTimeService,
+                seatService,        // ← fix: đúng vị trí
+                bookingService,     // ← fix: đúng vị trí
+                authenticationService,
+                sessionService,
+                invoiceService
+        );
 
-    public void openLoginUI() {
-        switchFrame(new LoginUI(authenticationService));
+        appController = new AppController(
+                authenticationService,
+                sessionService,
+                navigationController
+        );
     }
 
-    // sau này thêm:
-    // public void openMovieManagement() { ... }
-    // public void openUserManagement() { ... }
-
-    // ===== Core điều hướng =====
-
-    private void switchFrame(JFrame newFrame) {
-        if (currentFrame != null) {
-            currentFrame.dispose(); // đóng màn hình cũ
-        }
-
-        currentFrame = newFrame;
-        currentFrame.setVisible(true);
-    }
+    public AppController getAppController()           { return appController; }
+    public NavigationController getNavigationController() { return navigationController; }
 }

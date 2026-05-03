@@ -1,6 +1,7 @@
 package com.application;
 
 import com.application.dao.*;
+import com.application.dto.user.CreateStaffDTO;
 import com.application.service.*;
 import com.application.service.impl.*;
 import com.application.view.AppUI;
@@ -21,6 +22,7 @@ public class Main {
         ShowTimeDao showTimeDao = new ShowTimeDao(connectionDb);
         BookingDao bookingDao = new BookingDao(connectionDb);
         MembershipDao membershipDao = new MembershipDao(connectionDb);
+        InvoiceDao invoiceDao = new InvoiceDao(connectionDb);
 
         // ===== SERVICE =====
         SessionService sessionService = new SessionServiceImpl();
@@ -31,14 +33,21 @@ public class Main {
         RoomService roomService = new RoomServiceImpl(roomDao);
         MovieService movieService = new MovieServiceImpl(movieDao);
         ShowTimeService showTimeService = new ShowTimeServiceImpl(showTimeDao);
-        BookingService bookingService = new BookingServiceImpl(bookingDao);
+        BookingService bookingService = new BookingServiceImpl(bookingDao, showTimeService);
         MembershipService membershipService = new MembershipServiceImpl(membershipDao);
+        InvoiceService invoiceService = new InvoiceService(invoiceDao);
 
         AppUI appUI = new AppUI(
                 bookingService,
                 userService,
                 movieService,
-                authenticationService
+                authenticationService,
+                sessionService,
+                showTimeService,
+                seatService,
+                roomService,
+                membershipService,
+                invoiceService
         );
 
         appUI.start();

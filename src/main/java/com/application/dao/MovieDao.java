@@ -3,13 +3,10 @@ package com.application.dao;
 import com.application.entity.Genre;
 import com.application.entity.Movie;
 import com.application.entity.enums.MovieStatus;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class MovieDao {
@@ -79,12 +76,14 @@ public class MovieDao {
     }
 
     public List<Movie> findAll() {
-        String sql = "SELECT * FROM movies;";
+        String sql =
+                "SELECT m.*, g.id AS genre_id, g.name AS genre_name " +
+                        "FROM movies m " +
+                        "LEFT JOIN movie_genre mg ON m.id = mg.movie_id " +
+                        "LEFT JOIN genres g ON mg.genre_id = g.id";
 
         try (Statement statement = connectionDB.createStatement()) {
-
             ResultSet rows = statement.executeQuery(sql);
-
             return mapResultToObj(rows);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -92,28 +91,42 @@ public class MovieDao {
     }
 
     public List<Movie> findAllByStatus(MovieStatus status) {
-        String sql = "SELECT * FROM movies WHERE status = ?;";
+        String sql =
+                "SELECT m.*, g.id AS genre_id, g.name AS genre_name " +
+                        "FROM movies m " +
+                        "LEFT JOIN movie_genre mg ON m.id = mg.movie_id " +
+                        "LEFT JOIN genres g ON mg.genre_id = g.id " +
+                        "WHERE m.status = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
             statement.setString(1, status.name());
-            ResultSet rows = statement.executeQuery(sql);
 
+            ResultSet rows = statement.executeQuery();
             return mapResultToObj(rows);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     public Optional<Movie> findById(Long id) {
-        String sql = "SELECT * FROM movies WHERE id = ?;";
+        String sql =
+                "SELECT m.*, g.id AS genre_id, g.name AS genre_name " +
+                        "FROM movies m " +
+                        "LEFT JOIN movie_genre mg ON m.id = mg.movie_id " +
+                        "LEFT JOIN genres g ON mg.genre_id = g.id " +
+                        "WHERE m.id = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
             statement.setLong(1, id);
 
             ResultSet rows = statement.executeQuery();
+            List<Movie> movies = mapResultToObj(rows);
 
-            List<Movie> rooms = mapResultToObj(rows);
-            return (rooms.isEmpty()) ? Optional.empty() : Optional.of(rooms.getFirst());
+            return movies.isEmpty()
+                    ? Optional.empty()
+                    : Optional.of(movies.getFirst());
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -193,30 +206,49 @@ public class MovieDao {
     }
 
     private List<Movie> mapResultToObj(ResultSet rows) throws SQLException {
-        List<Movie> movies = new ArrayList<>();
+        Map<Long, Movie> movieMap = new LinkedHashMap<>();
 
         while (rows.next()) {
-            movies.add(
-                    Movie.builder()
-                            .id(rows.getLong("id"))
-                            .title(rows.getString("title"))
-                            .description(rows.getString("description"))
-                            .director(rows.getString("director"))
-                            .cast(rows.getString("cast"))
-                            .posterPath(rows.getString("poster_path"))
-                            .releaseDate(rows.getTimestamp("release_date"))
-                            .endDate(rows.getTimestamp("end_date"))
-                            .language(rows.getString("language"))
-                            .subtitleLanguage(rows.getString("subtitle_language"))
-                            .country(rows.getString("country"))
-                            .ageRating(rows.getString("age_rating"))
-                            .status(MovieStatus.valueOf(rows.getString("status")))
-                            .createdAt(rows.getTimestamp("created_at"))
-                            .updatedAt(rows.getTimestamp("updated_at"))
-                            .build());
+            Long movieId = rows.getLong("id");
+
+            Movie movie = movieMap.get(movieId);
+
+            if (movie == null) {
+                movie = Movie.builder()
+                        .id(movieId)
+                        .title(rows.getString("title"))
+                        .description(rows.getString("description"))
+                        .director(rows.getString("director"))
+                        .cast(rows.getString("cast"))
+                        .posterPath(rows.getString("poster_path"))
+                        .releaseDate(rows.getTimestamp("release_date"))
+                        .endDate(rows.getTimestamp("end_date"))
+                        .language(rows.getString("language"))
+                        .subtitleLanguage(rows.getString("subtitle_language"))
+                        .country(rows.getString("country"))
+                        .ageRating(rows.getString("age_rating"))
+                        .status(MovieStatus.valueOf(rows.getString("status")))
+                        .createdAt(rows.getTimestamp("created_at"))
+                        .updatedAt(rows.getTimestamp("updated_at"))
+                        .genres(new HashSet<>())
+                        .build();
+
+                movieMap.put(movieId, movie);
+            }
+
+            // add genre nếu có
+            long genreId = rows.getLong("genre_id");
+            if (!rows.wasNull()) {
+                Genre genre = Genre.builder()
+                        .id((int) genreId)
+                        .name(rows.getString("genre_name"))
+                        .build();
+
+                movie.getGenres().add(genre);
+            }
         }
 
-        return movies;
+        return new ArrayList<>(movieMap.values());
     }
 
     private void setMovieGenre(Long movieId, List<Integer> genreIds) {

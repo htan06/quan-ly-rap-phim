@@ -9,6 +9,7 @@ import lombok.Setter;
 @Builder
 public class Session {
     private String id;
+    private Long userId;
     private String username;
     private String firstName;
     private String lastName;

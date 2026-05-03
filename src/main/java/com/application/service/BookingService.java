@@ -14,5 +14,9 @@ public interface BookingService {
 
     Booking findById(Long id);
 
+    Booking findFullInfoById(Long id);
+
     List<Booking> findAll();
+
+    List<Long> seatBookedId(Long showTimeId);
 }

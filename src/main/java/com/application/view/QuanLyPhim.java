@@ -393,8 +393,4 @@ public class QuanLyPhim extends JFrame implements ActionListener {
 			}
 		}
 	}
-
-	public static void main(String[] args) {
-		new QuanLyPhim().setVisible(true);
-	}
 }
