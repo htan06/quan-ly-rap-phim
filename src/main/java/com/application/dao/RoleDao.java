@@ -2,6 +2,7 @@ package com.application.dao;
 
 import com.application.entity.Role;
 import com.application.entity.User;
+import lombok.AllArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,12 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
+@AllArgsConstructor
 public class RoleDao {
-    private Connection connectionDB;
-
-    public RoleDao(Connection connectionDB) {
-        this.connectionDB = connectionDB;
-    }
+    private final Connection connectionDB;
 
     public void createRole(Role role) {
         String sql = "INSERT INTO roles (role_name) VALUES (?);";

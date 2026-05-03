@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface RoomService {
     void createRoom(CreateRoomDTO createRoom);
-    List<Room> getRooms();
-    Room getRoom(Integer id);
+    List<Room> findAll();
+    Room findById(Integer id);
     void updateInfo(UpdateRoomInfoDTO updateRoomInfo);
     void updateStatus(Integer id, RoomStatus status);
 }

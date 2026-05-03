@@ -2,7 +2,6 @@ package com.application.dao;
 
 import com.application.entity.Genre;
 import com.application.entity.Movie;
-import com.application.entity.Room;
 import com.application.entity.enums.MovieStatus;
 import lombok.AllArgsConstructor;
 
@@ -13,6 +12,7 @@ import java.util.Optional;
 
 @AllArgsConstructor
 public class MovieDao {
+
     private final Connection connectionDB;
 
     public Long createMovie(Movie movie) {
