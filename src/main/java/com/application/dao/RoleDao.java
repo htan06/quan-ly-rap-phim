@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class RoleDao {
     private Connection connectionDB;
@@ -30,19 +31,23 @@ public class RoleDao {
         }
     }
 
-    public Role findRoleByName(String name) {
+    public Optional<Role> findRoleByName(String name) {
         String sql = "SELECT * FROM roles WHERE role_name = ?";
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
 
             statement.setString(1, name);
 
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet rows = statement.executeQuery();
 
-            if (resultSet.next()) {
-                return Role.builder()
-                        .id(resultSet.getInt("id"))
-                        .roleName("role_name")
-                        .build();
+            if (rows.next()) {
+                return Optional.of(
+                        Role.builder()
+                            .id(rows.getInt("id"))
+                            .roleName("role_name")
+                            .createdAt(rows.getTimestamp("created_at"))
+                            .updatedAt(rows.getTimestamp("updated_at"))
+                            .build()
+                        );
             } else {
                 throw new IllegalArgumentException("Role not found");
             }

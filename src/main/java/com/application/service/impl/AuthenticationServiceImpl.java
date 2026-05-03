@@ -1,8 +1,8 @@
 package com.application.service.impl;
 
 import com.application.dao.UserDao;
-import com.application.dto.UserLoginRequest;
-import com.application.dto.CreateStaffDTO;
+import com.application.dto.auth.UserLoginRequest;
+import com.application.dto.user.CreateStaffDTO;
 import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
 import com.application.service.AuthenticationService;

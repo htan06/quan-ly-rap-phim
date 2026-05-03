@@ -1,6 +1,6 @@
 package com.application.dao;
 
-import com.application.dto.UpdateStaffInfoDTO;
+import com.application.dto.user.UpdateStaffInfoDTO;
 import com.application.entity.Role;
 import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
@@ -12,14 +12,18 @@ import java.util.Optional;
 
 public class UserDao {
     private Connection connectionDB;
+    private RoleDao roleDao;
 
-    public UserDao(Connection connectionDB) {
+    public UserDao(Connection connectionDB, RoleDao roleDao) {
         this.connectionDB = connectionDB;
+        this.roleDao = roleDao;
     }
 
     public void createUser(User user) {
         String sql = "INSERT INTO users (first_name, last_name, email, phone_number, status, username, password) VALUES (?, ?, ?, ?, ?, ?, ?);";
-        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
+        try (PreparedStatement statement = connectionDB.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            connectionDB.setAutoCommit(false);
 
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
@@ -29,17 +33,36 @@ public class UserDao {
             statement.setString(6, user.getUsername());
             statement.setString(7, user.getPassword());
 
-            int rows = statement.executeUpdate();
-            if (rows == 0) {
+            int rowUpdated = statement.executeUpdate();
+            if (rowUpdated == 0) {
                 throw new RuntimeException("Tao user khong thanh cong");
             }
+
+            ResultSet rows = statement.getGeneratedKeys();
+            rows.next();
+
+            long userId = rows.getLong(1);
+            int roleId = roleDao.findRoleByName(user.getRole().getRoleName())
+                            .orElseThrow(() -> new RuntimeException("Role not found"))
+                        .getId();
+            setRole(userId, roleId);
+
+            connectionDB.commit();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            try {
+                connectionDB.rollback();
+            } catch (SQLException ignore) {}
+            throw new RuntimeException("tao user khong thanh cong");
+        } finally {
+            try {
+                connectionDB.setAutoCommit(true);
+            } catch (SQLException ignore) {}
         }
     }
 
     public Optional<User> findByUserName(String username) {
-        String sql = "SELECT first_name, last_name, email, phone_number, username, password, role_name " +
+        String sql = "SELECT " +
+                        "u.id, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.password, u.role_name, u.created_at, u.updated_at " +
                     "FROM users as u " +
                     "JOIN roles as r " +
                         "ON u.role_id = r.id " +
@@ -119,27 +142,31 @@ public class UserDao {
 
             int rows = statement.executeUpdate();
             if (rows == 0) {
-                throw new RuntimeException("cap nhat role khong thanh cong");
+                throw new RuntimeException("set role cho user khong thanh cong");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private List<User> mapResultToObj(ResultSet resultSet) throws SQLException {
+    private List<User> mapResultToObj(ResultSet rows) throws SQLException {
         List<User> users = new ArrayList<>();
-        while (resultSet.next()) {
+        while (rows.next()) {
             users.add(
                     User.builder()
-                            .firstName(resultSet.getString("first_name"))
-                            .lastName(resultSet.getString("last_name"))
-                            .email(resultSet.getString("email"))
-                            .phoneNumber(resultSet.getString("phone_number"))
-                            .username(resultSet.getString("username"))
-                            .password(resultSet.getString("password"))
+                            .id(rows.getLong("id"))
+                            .firstName(rows.getString("first_name"))
+                            .lastName(rows.getString("last_name"))
+                            .email(rows.getString("email"))
+                            .phoneNumber(rows.getString("phone_number"))
+                            .username(rows.getString("username"))
+                            .password(rows.getString("password"))
+                            .status(UserStatus.valueOf(rows.getString("status")))
                             .role(Role.builder()
-                                    .roleName(resultSet.getString("role_name"))
+                                    .roleName(rows.getString("role_name"))
                                     .build())
+                            .createdAt(rows.getTimestamp("created_at"))
+                            .updatedAt(rows.getTimestamp("updated_at"))
                             .build()
             );
         }

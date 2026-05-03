@@ -42,5 +42,12 @@
             <version>0.4</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.toedter</groupId>
+            <artifactId>jcalendar</artifactId>
+            <version>1.4</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

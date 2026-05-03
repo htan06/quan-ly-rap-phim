@@ -1,4 +1,4 @@
-package com.application.dto;
+package com.application.dto.user;
 
 public record UpdateStaffInfoDTO(
         String username,
