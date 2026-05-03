@@ -3,7 +3,6 @@ package com.application.dao;
 import com.application.entity.Genre;
 import com.application.entity.Movie;
 import com.application.entity.enums.MovieStatus;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
@@ -65,12 +64,14 @@ public class MovieDao {
         } catch (SQLException e) {
             try {
                 connectionDB.rollback();
-            } catch (SQLException ignore) {}
-                throw new RuntimeException("Tao movie khong thanh cong");
+            } catch (SQLException ignore) {
+            }
+            throw new RuntimeException("Tao movie khong thanh cong");
         } finally {
             try {
                 connectionDB.setAutoCommit(true);
-            } catch (SQLException ignore) {}
+            } catch (SQLException ignore) {
+            }
         }
     }
 
@@ -133,18 +134,18 @@ public class MovieDao {
 
     public void updateInfo(Movie movie) {
         String sql = "UPDATE movies SET " +
-                    "title = ?, " +
-                    "description = ?, " +
-                    "director = ?, " +
-                    "cast = ?, " +
-                    "poster_path = ?, " +
-                    "release_date = ?, " +
-                    "end_date = ?, " +
-                    "language = ?, " +
-                    "subtitle_language = ?, " +
-                    "country = ?, " +
-                    "age_rating = ?, " +
-                    "status = ? " +
+                "title = ?, " +
+                "description = ?, " +
+                "director = ?, " +
+                "cast = ?, " +
+                "poster_path = ?, " +
+                "release_date = ?, " +
+                "end_date = ?, " +
+                "language = ?, " +
+                "subtitle_language = ?, " +
+                "country = ?, " +
+                "age_rating = ?, " +
+                "status = ? " +
                 "WHERE id = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
@@ -177,12 +178,14 @@ public class MovieDao {
         } catch (SQLException e) {
             try {
                 connectionDB.rollback();
-            } catch (SQLException ignore) {}
+            } catch (SQLException ignore) {
+            }
             throw new RuntimeException("Tao movie khong thanh cong");
         } finally {
             try {
                 connectionDB.setAutoCommit(true);
-            } catch (SQLException ignore) {}
+            } catch (SQLException ignore) {
+            }
         }
     }
 
@@ -259,7 +262,7 @@ public class MovieDao {
             }
             int rowUpdated = statement.executeUpdate();
             if (rowUpdated == 0) {
-                throw  new RuntimeException("set movie genre khong thanh cong");
+                throw new RuntimeException("set movie genre khong thanh cong");
             }
         } catch (SQLException ex) {
             throw new RuntimeException("Set genre cho movie khong thanh cong");
