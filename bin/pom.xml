@@ -29,17 +29,10 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
+        <dependency>K
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.46</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mindrot</groupId>
-            <artifactId>jbcrypt</artifactId>
-            <version>0.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
