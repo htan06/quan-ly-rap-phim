@@ -1,4 +1,4 @@
-package view;
+package com.application.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -179,7 +179,7 @@ public class ThongKeDoanhThu extends JFrame{
 		txtTimKiem = new JTextField(50); 
 		txtTimKiem.setBorder(null);
 		ImageIcon lgTimKiem = new ImageIcon(
-			    getClass().getResource("/icon/search.png")
+			    getClass().getResource("../icon/search.png")
 			);
 		Image img = lgTimKiem.getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH);
 		JButton btnLogo = new JButton(new ImageIcon(img));
