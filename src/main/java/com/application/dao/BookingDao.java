@@ -3,6 +3,7 @@ package com.application.dao;
 import com.application.entity.*;
 import com.application.entity.enums.BookingStatus;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BookingDao {
 
     private final Connection connectionDb;

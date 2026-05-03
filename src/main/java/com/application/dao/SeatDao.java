@@ -5,6 +5,7 @@ import com.application.entity.Seat;
 import com.application.entity.enums.SeatStatus;
 import com.application.entity.enums.SeatType;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SeatDao {
-    private Connection connectionDB;
+    private final Connection connectionDB;
 
     public void createSeat(Integer roomId, List<Seat> seats) {
         String sql = "INSERT INTO seats (name, status, type, room_id) VALUES (?, ?)";

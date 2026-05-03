@@ -8,10 +8,11 @@ import com.application.entity.Room;
 import com.application.entity.ShowTime;
 import com.application.service.ShowTimeService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ShowTimeServiceImpl implements ShowTimeService {
 
     private final ShowTimeDao showTimeDao;

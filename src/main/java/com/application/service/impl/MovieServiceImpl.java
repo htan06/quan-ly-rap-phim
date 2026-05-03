@@ -8,11 +8,12 @@ import com.application.entity.Movie;
 import com.application.entity.enums.MovieStatus;
 import com.application.service.MovieService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
 
     private final MovieDao movieDao;

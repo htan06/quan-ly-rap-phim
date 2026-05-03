@@ -4,10 +4,11 @@ import com.application.dao.MembershipDao;
 import com.application.entity.Membership;
 import com.application.service.MembershipService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MembershipServiceImpl implements MembershipService {
 
     private final MembershipDao membershipDao;

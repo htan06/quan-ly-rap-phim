@@ -2,13 +2,14 @@ package com.application.dao;
 
 import com.application.entity.Membership;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MembershipDao {
 
     private final Connection connectionDB;

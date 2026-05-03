@@ -9,13 +9,14 @@ import com.application.service.AuthenticationService;
 import com.application.service.SessionService;
 import com.application.utils.ValidData;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private UserDao userDao;
-    private SessionService sessionService;
+    private final UserDao userDao;
+    private final SessionService sessionService;
 
     @Override
     public void createStaff(CreateStaffDTO createStaff) {

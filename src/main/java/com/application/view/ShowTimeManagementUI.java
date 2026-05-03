@@ -1,5 +1,7 @@
 package com.application.view;
 
+import com.application.service.ShowTimeService;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -31,6 +33,8 @@ import javax.swing.table.DefaultTableModel;
 
 public class ShowTimeManagementUI extends JFrame implements ActionListener {
 
+    private ShowTimeService showTimeService;
+
     private JTextField txtMovieName;
 	private JComboBox<String> cbShowRoom;
 	private JButton btnThem;
@@ -45,7 +49,8 @@ public class ShowTimeManagementUI extends JFrame implements ActionListener {
 	private JTextField txtShowTimeStart;
 	private JTextField txtShowTimeEnd;
 
-	public ShowTimeManagementUI() {
+	public ShowTimeManagementUI(ShowTimeService showTimeService) {
+        this.showTimeService = showTimeService;
 		initFrame();
 		initUI();
 		
@@ -299,9 +304,5 @@ public class ShowTimeManagementUI extends JFrame implements ActionListener {
 		}
 		
 		return true;
-	}
-	
-	public static void main(String[] args) {
-		new ShowTimeManagementUI().setVisible(true);
 	}
 }

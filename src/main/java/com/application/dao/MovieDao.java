@@ -4,13 +4,14 @@ import com.application.entity.Genre;
 import com.application.entity.Movie;
 import com.application.entity.enums.MovieStatus;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MovieDao {
 
     private final Connection connectionDB;

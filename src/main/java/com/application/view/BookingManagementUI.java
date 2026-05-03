@@ -26,11 +26,16 @@ import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import com.application.service.BookingService;
 import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JTextFieldDateEditor;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 public class BookingManagementUI extends JFrame {
-	
+
+    private BookingService bookingService;
+
 	private JComboBox<String> cbShowTimeId;
 	private JButton btnThem;
 	private JButton btnXoa;
@@ -47,10 +52,10 @@ public class BookingManagementUI extends JFrame {
 	private JTextField txtTax;
 	private JTextField txtTotalPrice;
 
-	public BookingManagementUI() {
-		initFrame();
+	public BookingManagementUI(BookingService bookingService) {
+        this.bookingService = bookingService;
+        initFrame();
 		initUI();
-		
 	}
     
     private void initFrame() {
@@ -178,9 +183,4 @@ public class BookingManagementUI extends JFrame {
 		add(pnlMenu, BorderLayout.WEST);
 		add(pnlInfo, BorderLayout.CENTER);
     }
-    
-    public static void main(String[] args) {
-		new BookingManagementUI().setVisible(true);
-	}
-    
 }

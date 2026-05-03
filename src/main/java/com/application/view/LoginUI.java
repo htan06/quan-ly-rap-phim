@@ -1,5 +1,7 @@
 package com.application.view;
 
+import com.application.service.AuthenticationService;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -20,11 +22,14 @@ import javax.swing.JTextField;
 
 public class LoginUI extends JFrame {
 
+    private AuthenticationService authenticationService;
+
 	private JTextField userField;
 	private JPasswordField passwordField;
 	private JButton loginButton;
 
-	public LoginUI() {
+	public LoginUI(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
 		initFrame();
 		initComponents();
 		initUI();
@@ -142,9 +147,5 @@ public class LoginUI extends JFrame {
 		}
 		
 		return true;
-	}
-	
-	public static void main(String[] args) {
-		new LoginUI().setVisible(true);
 	}
 }

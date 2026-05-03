@@ -11,12 +11,13 @@ import com.application.entity.enums.SeatStatus;
 import com.application.entity.enums.SeatType;
 import com.application.service.RoomService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
 
     private final RoomDao roomDao;
