@@ -4,20 +4,17 @@ import com.application.dto.user.UpdateStaffInfoDTO;
 import com.application.entity.Role;
 import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
+import lombok.AllArgsConstructor;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 public class UserDao {
     private Connection connectionDB;
     private RoleDao roleDao;
-
-    public UserDao(Connection connectionDB, RoleDao roleDao) {
-        this.connectionDB = connectionDB;
-        this.roleDao = roleDao;
-    }
 
     public void createUser(User user) {
         String sql = "INSERT INTO users (first_name, last_name, email, phone_number, status, username, password) VALUES (?, ?, ?, ?, ?, ?, ?);";

@@ -8,17 +8,14 @@ import com.application.entity.enums.UserStatus;
 import com.application.service.AuthenticationService;
 import com.application.service.SessionService;
 import com.application.utils.ValidData;
+import lombok.AllArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 
+@AllArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private UserDao userDao;
     private SessionService sessionService;
-
-    public AuthenticationServiceImpl(UserDao userDao, SessionService sessionService) {
-        this.userDao = userDao;
-        this.sessionService = sessionService;
-    }
 
     @Override
     public void createStaff(CreateStaffDTO createStaff) {

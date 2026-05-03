@@ -4,18 +4,19 @@ import com.application.entity.Room;
 import com.application.entity.Seat;
 import com.application.entity.enums.SeatStatus;
 import com.application.entity.enums.SeatType;
+import lombok.AllArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@AllArgsConstructor
 public class SeatDao {
     private Connection connectionDB;
-
-    public SeatDao(Connection connectionDB) {
-        this.connectionDB = connectionDB;
-    }
 
     public void createSeat(Integer roomId, List<Seat> seats) {
         String sql = "INSERT INTO seats (name, status, type, room_id) VALUES (?, ?)";
@@ -36,6 +37,21 @@ public class SeatDao {
             if (rows == 0) {
                 throw new RuntimeException("Tao seat khong thanh cong");
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<Seat> findById(Long id) {
+        String sql = "SELECT * FROM seats WHERE id = ?;";
+
+        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
+            statement.setLong(1, id);
+
+            ResultSet rows = statement.executeQuery();
+
+            List<Seat> seats = mapResultToObj(rows);
+            return (seats.isEmpty()) ? Optional.empty() : Optional.of(seats.getFirst());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -71,5 +87,24 @@ public class SeatDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<Seat> mapResultToObj(ResultSet rs) throws SQLException {
+        List<Seat> seats = new ArrayList<>();
+
+        while (rs.next()) {
+            seats.add(
+                    Seat.builder()
+                            .id(rs.getLong("id"))
+                            .name(rs.getString("name"))
+                            .status(SeatStatus.valueOf(rs.getString("status")))
+                            .type(SeatType.valueOf(rs.getString("type")))
+                            .createdAt(rs.getTimestamp("created_at"))
+                            .updatedAt(rs.getTimestamp("updated_at"))
+                            .build()
+            );
+        }
+
+        return seats;
     }
 }

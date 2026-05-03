@@ -6,13 +6,11 @@ import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
 import com.application.service.UserService;
 import com.application.utils.ValidData;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private UserDao userDao;
-
-    public UserServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     @Override
     public User getUserByUsername(String username) {
@@ -22,11 +20,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateStatusUser(String username, UserStatus status) {
+        userDao.findByUserName(username);
         userDao.updateStatus(username, status);
     }
 
     @Override
     public void updateUserInfo(UpdateStaffInfoDTO updateStaffInfo) {
+        userDao.findByUserName(updateStaffInfo.username());
         if (!ValidData.validEmail(updateStaffInfo.email())) {
             throw new IllegalArgumentException("Email khong dung dinh dang");
         }

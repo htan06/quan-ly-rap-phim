@@ -20,7 +20,6 @@ import java.util.List;
 public class RoomServiceImpl implements RoomService {
 
     private final RoomDao roomDao;
-    private final SeatDao seatDao;
 
     @Override
     public void createRoom(CreateRoomDTO createRoom) {
@@ -62,23 +61,22 @@ public class RoomServiceImpl implements RoomService {
                         .seats(seats)
                         .build()
         );
-
-        seatDao.createSeat(roomId, seats);
     }
 
     @Override
-    public List<Room> getRooms() {
+    public List<Room> findAll() {
         return roomDao.findAll();
     }
 
     @Override
-    public Room getRoom(Integer id) {
+    public Room findById(Integer id) {
         return roomDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
     }
 
     @Override
     public void updateInfo(UpdateRoomInfoDTO updateRoomInfo) {
+        findById(updateRoomInfo.id());
         roomDao.updateInfo(
                 Room.builder()
                         .id(updateRoomInfo.id())
@@ -91,6 +89,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void updateStatus(Integer id, RoomStatus status) {
+        findById(id);
         roomDao.updateStatus(id, status);
     }
 }
