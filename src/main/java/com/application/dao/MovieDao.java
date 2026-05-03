@@ -67,17 +67,19 @@ public class MovieDao {
         } catch (SQLException e) {
             try {
                 connectionDB.rollback();
-            } catch (SQLException ignore) {}
-                throw new RuntimeException("Tao movie khong thanh cong");
+            } catch (SQLException ignore) {
+            }
+            throw new RuntimeException("Tao movie khong thanh cong");
         } finally {
             try {
                 connectionDB.setAutoCommit(true);
-            } catch (SQLException ignore) {}
+            } catch (SQLException ignore) {
+            }
         }
     }
 
     public List<Movie> findAll() {
-        String sql ="SELECT * FROM movies;";
+        String sql = "SELECT * FROM movies;";
 
         try (Statement statement = connectionDB.createStatement()) {
 
@@ -90,7 +92,7 @@ public class MovieDao {
     }
 
     public List<Movie> findAllByStatus(MovieStatus status) {
-        String sql ="SELECT * FROM movies WHERE status = ?;";
+        String sql = "SELECT * FROM movies WHERE status = ?;";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
             statement.setString(1, status.name());
@@ -119,18 +121,18 @@ public class MovieDao {
 
     public void updateInfo(Movie movie) {
         String sql = "UPDATE movies SET " +
-                    "title = ?, " +
-                    "description = ?, " +
-                    "director = ?, " +
-                    "cast = ?, " +
-                    "poster_path = ?, " +
-                    "release_date = ?, " +
-                    "end_date = ?, " +
-                    "language = ?, " +
-                    "subtitle_language = ?, " +
-                    "country = ?, " +
-                    "age_rating = ?, " +
-                    "status = ? " +
+                "title = ?, " +
+                "description = ?, " +
+                "director = ?, " +
+                "cast = ?, " +
+                "poster_path = ?, " +
+                "release_date = ?, " +
+                "end_date = ?, " +
+                "language = ?, " +
+                "subtitle_language = ?, " +
+                "country = ?, " +
+                "age_rating = ?, " +
+                "status = ? " +
                 "WHERE id = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
@@ -163,12 +165,14 @@ public class MovieDao {
         } catch (SQLException e) {
             try {
                 connectionDB.rollback();
-            } catch (SQLException ignore) {}
+            } catch (SQLException ignore) {
+            }
             throw new RuntimeException("Tao movie khong thanh cong");
         } finally {
             try {
                 connectionDB.setAutoCommit(true);
-            } catch (SQLException ignore) {}
+            } catch (SQLException ignore) {
+            }
         }
     }
 
@@ -209,8 +213,7 @@ public class MovieDao {
                             .status(MovieStatus.valueOf(rows.getString("status")))
                             .createdAt(rows.getTimestamp("created_at"))
                             .updatedAt(rows.getTimestamp("updated_at"))
-                            .build()
-            );
+                            .build());
         }
 
         return movies;
@@ -227,7 +230,7 @@ public class MovieDao {
             }
             int rowUpdated = statement.executeUpdate();
             if (rowUpdated == 0) {
-                throw  new RuntimeException("set movie genre khong thanh cong");
+                throw new RuntimeException("set movie genre khong thanh cong");
             }
         } catch (SQLException ex) {
             throw new RuntimeException("Set genre cho movie khong thanh cong");
