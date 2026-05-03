@@ -6,10 +6,11 @@ import com.application.entity.*;
 import com.application.entity.enums.BookingStatus;
 import com.application.service.BookingService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingDao bookingDao;

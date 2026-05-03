@@ -3,6 +3,7 @@ package com.application;
 import com.application.dao.*;
 import com.application.service.*;
 import com.application.service.impl.*;
+import com.application.view.AppUI;
 
 import java.sql.Connection;
 
@@ -32,5 +33,14 @@ public class Main {
         ShowTimeService showTimeService = new ShowTimeServiceImpl(showTimeDao);
         BookingService bookingService = new BookingServiceImpl(bookingDao);
         MembershipService membershipService = new MembershipServiceImpl(membershipDao);
+
+        AppUI appUI = new AppUI(
+                bookingService,
+                userService,
+                movieService,
+                authenticationService
+        );
+
+        appUI.start();
     }
 }

@@ -3,6 +3,7 @@ package com.application.dao;
 import com.application.entity.Role;
 import com.application.entity.User;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RoleDao {
     private final Connection connectionDB;
 

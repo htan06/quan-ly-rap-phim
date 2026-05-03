@@ -1,4 +1,4 @@
-package com.application.view;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -94,7 +95,7 @@ public class QuanLyPhim extends JFrame{
 		
 		txtTimKiem = new JTextField(); txtTimKiem.setBorder(null);
 		ImageIcon lgTimKiem = new ImageIcon(
-			    getClass().getResource("../icon/search.png")
+                Objects.requireNonNull(getClass().getResource("/icon/search.png"))
 			);
 		Image img = lgTimKiem.getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH);
 		JButton btnLogo = new JButton(new ImageIcon(img));

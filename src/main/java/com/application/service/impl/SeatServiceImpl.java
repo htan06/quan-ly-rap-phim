@@ -6,8 +6,9 @@ import com.application.entity.enums.SeatStatus;
 import com.application.entity.enums.SeatType;
 import com.application.service.SeatService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SeatServiceImpl implements SeatService {
 
    private final SeatDao seatDao;

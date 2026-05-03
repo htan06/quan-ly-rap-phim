@@ -7,10 +7,11 @@ import com.application.entity.enums.UserStatus;
 import com.application.service.UserService;
 import com.application.utils.ValidData;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private UserDao userDao;
+    private final UserDao userDao;
 
     @Override
     public User getUserByUsername(String username) {
