@@ -4,18 +4,16 @@ import com.application.entity.Room;
 import com.application.entity.Seat;
 import com.application.entity.enums.SeatStatus;
 import com.application.entity.enums.SeatType;
+import lombok.AllArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+@AllArgsConstructor
 public class SeatDao {
     private Connection connectionDB;
-
-    public SeatDao(Connection connectionDB) {
-        this.connectionDB = connectionDB;
-    }
 
     public void createSeat(Integer roomId, List<Seat> seats) {
         String sql = "INSERT INTO seats (name, status, type, room_id) VALUES (?, ?)";

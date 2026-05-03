@@ -3,21 +3,18 @@ package com.application.dao;
 import com.application.entity.Room;
 import com.application.entity.enums.RoomStatus;
 import com.application.entity.enums.RoomType;
+import lombok.AllArgsConstructor;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 public class RoomDao {
 
     private Connection connectionDB;
     private SeatDao seatDao;
-
-    public RoomDao(Connection connectionDB, SeatDao seatDao) {
-        this.connectionDB = connectionDB;
-        this.seatDao = seatDao;
-    }
 
     public Integer createRoom(Room room) {
         String sql = "INSERT INTO rooms (name, roomType, capacity, status) VALUES (?, ?, ?, ?);";

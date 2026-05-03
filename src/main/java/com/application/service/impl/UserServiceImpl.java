@@ -6,13 +6,11 @@ import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
 import com.application.service.UserService;
 import com.application.utils.ValidData;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     private UserDao userDao;
-
-    public UserServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     @Override
     public User getUserByUsername(String username) {
