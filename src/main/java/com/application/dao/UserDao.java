@@ -58,9 +58,47 @@ public class UserDao {
         }
     }
 
+    public Optional<User> findById(Long id) {
+        String sql = "SELECT " +
+                "u.id, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.password, u.status, r.role_name, u.created_at, u.updated_at " +
+                "FROM users as u " +
+                "JOIN roles as r " +
+                "ON u.role_id = r.id " +
+                "WHERE id = ?";
+
+        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            List<User> users = mapResultToObj(resultSet);
+
+            resultSet.close();
+            return (users.isEmpty()) ? Optional.empty() : Optional.of(users.getFirst());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<User> findAll() {
+        String sql = "SELECT " +
+                "u.id, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.password, u.status, r.role_name, u.created_at, u.updated_at " +
+                "FROM users as u " +
+                "JOIN roles as r " +
+                "ON u.role_id = r.id;";
+
+        try (Statement statement = connectionDB.createStatement()) {
+
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            return mapResultToObj(resultSet);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Optional<User> findByUserName(String username) {
         String sql = "SELECT " +
-                        "u.id, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.password, u.role_name, u.created_at, u.updated_at " +
+                        "u.id, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.password, u.status, r.role_name, u.created_at, u.updated_at " +
                     "FROM users as u " +
                     "JOIN roles as r " +
                         "ON u.role_id = r.id " +
@@ -96,7 +134,7 @@ public class UserDao {
     }
 
     public void updateInfo(UpdateStaffInfoDTO updateStaffInfo) {
-        String sql ="UPDATE users SET first_name = ?, last_name = ?, email = ?, phone_number = ? WHERE username = ?, updated_at = GETDATE()";
+        String sql ="UPDATE users SET first_name = ?, last_name = ?, email = ?, phone_number, updated_at = GETDATE() = ? WHERE username = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
 

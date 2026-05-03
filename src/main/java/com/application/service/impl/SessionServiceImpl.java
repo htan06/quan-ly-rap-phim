@@ -14,6 +14,7 @@ public class SessionServiceImpl implements SessionService {
 
         session = Session.builder()
                 .id(SecureRandomId.randomString())
+                .userId(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .username(user.getUsername())
@@ -31,5 +32,10 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public String getSessionId() {
         return session.getId();
+    }
+
+    @Override
+    public Session getCurrent() {
+        return session;
     }
 }

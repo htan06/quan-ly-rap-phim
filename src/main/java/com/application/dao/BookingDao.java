@@ -82,6 +82,33 @@ public class BookingDao {
         }
     }
 
+    public List<Long> findBookedSeatIdsByShowTime(Long showTimeId) {
+        String sql =
+                "SELECT bd.seat_id " +
+                        "FROM bookings b " +
+                        "JOIN booking_details bd ON b.id = bd.booking_id " +
+                        "WHERE b.show_time_id = ? " +
+                        "AND b.status IN ('PENDING', 'PAID')";
+
+        try (PreparedStatement ps = connectionDb.prepareStatement(sql)) {
+
+            ps.setLong(1, showTimeId);
+
+            ResultSet rs = ps.executeQuery();
+
+            List<Long> seatIds = new ArrayList<>();
+
+            while (rs.next()) {
+                seatIds.add(rs.getLong("seat_id"));
+            }
+
+            return seatIds;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error get booked seats", e);
+        }
+    }
+
     public List<Booking> findAll() {
         String sql = "SELECT * FROM bookings";
 
@@ -107,6 +134,94 @@ public class BookingDao {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public Optional<Booking> findFullInfoById(Long bookingId) {
+
+        String sql =
+                "SELECT " +
+                        "b.id as booking_id, b.status, b.total_tax, b.total_price, b.created_at, b.updated_at, " +
+                        "st.id as showtime_id, st.start_time, st.end_time, " +
+                        "m.id as movie_id, m.title as movie_title, " +
+                        "r.id as room_id, r.name as room_name, " +
+                        "s.id as seat_id, s.name as seat_name " +
+                        "FROM bookings b " +
+                        "JOIN show_times st ON b.show_time_id = st.id " +
+                        "JOIN movies m ON st.movie_id = m.id " +
+                        "JOIN rooms r ON st.room_id = r.id " +
+                        "JOIN booking_details bd ON bd.booking_id = b.id " +
+                        "JOIN seats s ON bd.seat_id = s.id " +
+                        "WHERE b.id = ?";
+
+        try (PreparedStatement stmt = connectionDb.prepareStatement(sql)) {
+
+            stmt.setLong(1, bookingId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            Booking booking = null;
+            ShowTime showTime = null;
+            Movie movie = null;
+            Room room = null;
+
+            List<BookingDetail> details = new ArrayList<>();
+
+            while (rs.next()) {
+
+                // init 1 lần
+                if (booking == null) {
+
+                    movie = Movie.builder()
+                            .id(rs.getLong("movie_id"))
+                            .title(rs.getString("movie_title"))
+                            .build();
+
+                    room = Room.builder()
+                            .id(rs.getInt("room_id"))
+                            .name(rs.getString("room_name"))
+                            .build();
+
+                    showTime = ShowTime.builder()
+                            .id(rs.getLong("showtime_id"))
+                            .movie(movie)
+                            .room(room)
+                            .startTime(rs.getTimestamp("start_time"))
+                            .endTime(rs.getTimestamp("end_time"))
+                            .build();
+
+                    booking = Booking.builder()
+                            .id(rs.getLong("booking_id"))
+                            .showTime(showTime)
+                            .status(BookingStatus.valueOf(rs.getString("status")))
+                            .totalTax(rs.getBigDecimal("total_tax"))
+                            .totalPrice(rs.getBigDecimal("total_price"))
+                            .createdAt(rs.getTimestamp("created_at"))
+                            .updatedAt(rs.getTimestamp("updated_at"))
+                            .build();
+                }
+
+                // mỗi row là 1 seat
+                Seat seat = Seat.builder()
+                        .id(rs.getLong("seat_id"))
+                        .name(rs.getString("seat_name"))
+                        .build();
+
+                BookingDetail detail = BookingDetail.builder()
+                        .seat(seat)
+                        .build();
+
+                details.add(detail);
+            }
+
+            if (booking == null) return Optional.empty();
+
+            booking.setBookingDetails(details);
+
+            return Optional.of(booking);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetch full booking info", e);
         }
     }
 

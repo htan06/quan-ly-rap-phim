@@ -19,6 +19,7 @@ public class Movie extends BaseEntity<Long> {
     private String director;
     private String cast;
     private String posterPath;
+    private Integer duration;
     private Timestamp releaseDate;
     private Timestamp endDate;
     private String language;
