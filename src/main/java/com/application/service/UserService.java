@@ -1,6 +1,6 @@
 package com.application.service;
 
-import com.application.dto.UpdateStaffInfoDTO;
+import com.application.dto.user.UpdateStaffInfoDTO;
 import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
 

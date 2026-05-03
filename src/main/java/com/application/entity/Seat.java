@@ -11,7 +11,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Seat extends BaseEntity<Long> {
 
-    private Room room;
     private String name;
     private SeatStatus status;
     private SeatType type;

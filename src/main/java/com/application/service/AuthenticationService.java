@@ -1,7 +1,7 @@
 package com.application.service;
 
-import com.application.dto.UserLoginRequest;
-import com.application.dto.CreateStaffDTO;
+import com.application.dto.auth.UserLoginRequest;
+import com.application.dto.user.CreateStaffDTO;
 
 public interface AuthenticationService {
     void createStaff(CreateStaffDTO createStaff);

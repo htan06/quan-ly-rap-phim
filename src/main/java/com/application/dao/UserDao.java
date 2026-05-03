@@ -1,6 +1,6 @@
 package com.application.dao;
 
-import com.application.dto.UpdateStaffInfoDTO;
+import com.application.dto.user.UpdateStaffInfoDTO;
 import com.application.entity.Role;
 import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
@@ -39,7 +39,8 @@ public class UserDao {
     }
 
     public Optional<User> findByUserName(String username) {
-        String sql = "SELECT first_name, last_name, email, phone_number, username, password, role_name " +
+        String sql = "SELECT " +
+                        "u.id, u.first_name, u.last_name, u.email, u.phone_number, u.username, u.password, u.role_name, u.created_at, u.updated_at " +
                     "FROM users as u " +
                     "JOIN roles as r " +
                         "ON u.role_id = r.id " +
@@ -126,20 +127,23 @@ public class UserDao {
         }
     }
 
-    private List<User> mapResultToObj(ResultSet resultSet) throws SQLException {
+    private List<User> mapResultToObj(ResultSet rows) throws SQLException {
         List<User> users = new ArrayList<>();
-        while (resultSet.next()) {
+        while (rows.next()) {
             users.add(
                     User.builder()
-                            .firstName(resultSet.getString("first_name"))
-                            .lastName(resultSet.getString("last_name"))
-                            .email(resultSet.getString("email"))
-                            .phoneNumber(resultSet.getString("phone_number"))
-                            .username(resultSet.getString("username"))
-                            .password(resultSet.getString("password"))
+                            .id(rows.getLong("id"))
+                            .firstName(rows.getString("first_name"))
+                            .lastName(rows.getString("last_name"))
+                            .email(rows.getString("email"))
+                            .phoneNumber(rows.getString("phone_number"))
+                            .username(rows.getString("username"))
+                            .password(rows.getString("password"))
                             .role(Role.builder()
-                                    .roleName(resultSet.getString("role_name"))
+                                    .roleName(rows.getString("role_name"))
                                     .build())
+                            .createdAt(rows.getTimestamp("created_at"))
+                            .updatedAt(rows.getTimestamp("updated_at"))
                             .build()
             );
         }

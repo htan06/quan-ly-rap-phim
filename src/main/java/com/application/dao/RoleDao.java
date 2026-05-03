@@ -36,12 +36,14 @@ public class RoleDao {
 
             statement.setString(1, name);
 
-            ResultSet resultSet = statement.executeQuery();
+            ResultSet rows = statement.executeQuery();
 
-            if (resultSet.next()) {
+            if (rows.next()) {
                 return Role.builder()
-                        .id(resultSet.getInt("id"))
+                        .id(rows.getInt("id"))
                         .roleName("role_name")
+                        .createdAt(rows.getTimestamp("created_at"))
+                        .updatedAt(rows.getTimestamp("updated_at"))
                         .build();
             } else {
                 throw new IllegalArgumentException("Role not found");

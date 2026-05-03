@@ -1,7 +1,7 @@
 package com.application.service.impl;
 
 import com.application.dao.UserDao;
-import com.application.dto.UpdateStaffInfoDTO;
+import com.application.dto.user.UpdateStaffInfoDTO;
 import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
 import com.application.service.UserService;
