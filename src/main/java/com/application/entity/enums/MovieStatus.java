@@ -1,4 +1,4 @@
-package com.application.model.enums;
+package com.application.entity.enums;
 
 public enum MovieStatus {
     COMING_SOON,

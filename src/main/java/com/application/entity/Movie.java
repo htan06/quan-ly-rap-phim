@@ -1,11 +1,17 @@
-package com.application.model;
+package com.application.entity;
 
-import com.application.model.enums.MovieStatus;
+import com.application.entity.enums.MovieStatus;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.Set;
 import java.util.UUID;
 
+@Getter
+@Setter
+@SuperBuilder
 public class Movie extends BaseEntity<UUID> {
 
     private String title;
@@ -13,8 +19,8 @@ public class Movie extends BaseEntity<UUID> {
     private String director;
     private String cast;
     private String posterPath;
-    private LocalDate releaseDate;
-    private LocalDate endDate;
+    private Timestamp releaseDate;
+    private Timestamp endDate;
     private String language;
     private String subtitleLanguage;
     private String country;

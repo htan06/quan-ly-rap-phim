@@ -1,8 +1,9 @@
 package com.application.dao;
 
 import com.application.dto.UpdateStaffInfoDTO;
-import com.application.model.User;
-import com.application.model.enums.UserStatus;
+import com.application.entity.Role;
+import com.application.entity.User;
+import com.application.entity.enums.UserStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -37,8 +38,13 @@ public class UserDao {
         }
     }
 
-    public Optional<User> getUserByUserName(String username) {
-        String sql = "SELECT * FROM users WHERE username = ?";
+    public Optional<User> findByUserName(String username) {
+        String sql = "SELECT first_name, last_name, email, phone_number, username, password, role_name " +
+                    "FROM users as u " +
+                    "JOIN roles as r " +
+                        "ON u.role_id = r.id " +
+                    "WHERE username = ?";
+
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
 
             statement.setString(1, username);
@@ -68,7 +74,7 @@ public class UserDao {
         }
     }
 
-    public void updateUserInfo(UpdateStaffInfoDTO updateStaffInfo) {
+    public void updateInfo(UpdateStaffInfoDTO updateStaffInfo) {
         String sql ="UPDATE users SET first_name = ?, last_name = ?, email = ?, phone_number = ? WHERE username = ?, updated_at = GETDATE()";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
@@ -88,7 +94,7 @@ public class UserDao {
         }
     }
 
-    public void updateStatusUser(String username, UserStatus status) {
+    public void updateStatus(String username, UserStatus status) {
         String sql = "UPDATE users SET status = ?, updated_at = GETDATE() WHERE username = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
@@ -98,6 +104,22 @@ public class UserDao {
             int rows = statement.executeUpdate();
             if (rows == 0) {
                 throw new RuntimeException("cap nhat status khong thanh cong");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setRole(Long userId, Integer roleId) {
+        String sql = "INSERT INTO user_has_role (user_id, role_id) VALUES (?, ?);";
+
+        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
+            statement.setLong(1, userId);
+            statement.setInt(2, roleId);
+
+            int rows = statement.executeUpdate();
+            if (rows == 0) {
+                throw new RuntimeException("cap nhat role khong thanh cong");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -114,6 +136,10 @@ public class UserDao {
                             .email(resultSet.getString("email"))
                             .phoneNumber(resultSet.getString("phone_number"))
                             .username(resultSet.getString("username"))
+                            .password(resultSet.getString("password"))
+                            .role(Role.builder()
+                                    .roleName(resultSet.getString("role_name"))
+                                    .build())
                             .build()
             );
         }

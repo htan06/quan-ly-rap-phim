@@ -1,9 +1,15 @@
-package com.application.model;
+package com.application.entity;
 
-import com.application.model.enums.PaymentStatus;
+import com.application.entity.enums.PaymentStatus;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
+@Getter
+@Setter
+@SuperBuilder
 public class Payment extends BaseEntity<Long> {
 
     private Booking booking;

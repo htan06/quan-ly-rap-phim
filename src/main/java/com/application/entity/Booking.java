@@ -1,10 +1,16 @@
-package com.application.model;
+package com.application.entity;
 
-import com.application.model.enums.BookingStatus;
+import com.application.entity.enums.BookingStatus;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Getter
+@Setter
+@SuperBuilder
 public class Booking extends BaseEntity<Long> {
 
     private ShowTime showTime;

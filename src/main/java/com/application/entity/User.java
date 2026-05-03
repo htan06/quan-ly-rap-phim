@@ -1,17 +1,16 @@
-package com.application.model;
+package com.application.entity;
 
-import com.application.model.enums.UserStatus;
+import com.application.entity.enums.UserStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 public class User extends BaseEntity<Long> {
     private String firstName;
 
@@ -27,7 +26,7 @@ public class User extends BaseEntity<Long> {
 
     private String password;
 
-    private Set<Role> roles;
+    private Role role;
 
     @Override
     public String toString() {
