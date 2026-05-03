@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @SuperBuilder
-public class Movie extends BaseEntity<UUID> {
+public class Movie extends BaseEntity<Long> {
 
     private String title;
     private String description;
@@ -28,5 +28,4 @@ public class Movie extends BaseEntity<UUID> {
     private MovieStatus status;
 
     private Set<Genre> genres;
-
 }

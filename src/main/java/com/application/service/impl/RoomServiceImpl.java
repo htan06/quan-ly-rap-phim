@@ -91,11 +91,6 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void updateStatus(Integer id, RoomStatus status) {
-        roomDao.updateStatus(
-                Room.builder()
-                        .id(id)
-                        .status(status)
-                        .build()
-        );
+        roomDao.updateStatus(id, status);
     }
 }

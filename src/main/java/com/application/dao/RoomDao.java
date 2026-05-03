@@ -12,9 +12,11 @@ import java.util.Optional;
 public class RoomDao {
 
     private Connection connectionDB;
+    private SeatDao seatDao;
 
-    public RoomDao(Connection connectionDB) {
+    public RoomDao(Connection connectionDB, SeatDao seatDao) {
         this.connectionDB = connectionDB;
+        this.seatDao = seatDao;
     }
 
     public Integer createRoom(Room room) {
@@ -22,22 +24,37 @@ public class RoomDao {
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
+            connectionDB.setAutoCommit(false);
+
             statement.setString(1, room.getName());
             statement.setString(2, room.getRoomType().name());
             statement.setInt(3, room.getCapacity());
             statement.setString(4, room.getStatus().name());
 
-            int rowsupdated = statement.executeUpdate();
-            if (rowsupdated == 0) {
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated == 0) {
                 throw new RuntimeException("Tao room khong thanh cong");
             }
 
             ResultSet rows = statement.getGeneratedKeys();
 
             rows.next();
-            return rows.getInt(1);
+            int roomId = rows.getInt(1);
+
+            seatDao.createSeat(roomId, room.getSeats());
+
+            connectionDB.commit();
+
+            return roomId;
         } catch (SQLException e) {
+            try {
+                connectionDB.rollback();
+            } catch (SQLException ignore) {}
             throw new RuntimeException(e);
+        } finally {
+            try {
+                connectionDB.setAutoCommit(true);
+            } catch (SQLException ignore) {}
         }
     }
 
@@ -87,11 +104,12 @@ public class RoomDao {
         }
     }
 
-    public void updateStatus(Room room) {
+    public void updateStatus(Integer id, RoomStatus status) {
         String sql = "UPDATE rooms SET status = ? WHERE id = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
-            statement.setString(1, room.getStatus().name());
+            statement.setString(1, status.name());
+            statement.setInt(2, id);
 
             int rows = statement.executeUpdate();
             if (rows == 0) {
@@ -111,7 +129,7 @@ public class RoomDao {
                             .name(rows.getString("name"))
                             .roomType(RoomType.valueOf(rows.getString("room_type")))
                             .capacity(rows.getInt("capacity"))
-                            .status(RoomStatus.valueOf("status"))
+                            .status(RoomStatus.valueOf(rows.getString("status")))
                             .createdAt(rows.getTimestamp("created_at"))
                             .updatedAt(rows.getTimestamp("updated_at"))
                             .build()
