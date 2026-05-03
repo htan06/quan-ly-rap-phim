@@ -1,4 +1,4 @@
-package view;
+package com.application.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -79,8 +80,8 @@ public class QuanLyPhim extends JFrame implements ActionListener {
 	}
 
 	public JPanel info() {
-		JPanel pnlInfo = new JPanel();
-		pnlInfo.setPreferredSize(new Dimension(750, 500));
+		JPanel pnlInfo = new JPanel(new BorderLayout());
+		pnlInfo.setPreferredSize(new Dimension(730, 500));
 		pnlInfo.setBackground(Color.decode("#E7E6E6"));
 		UIManager.put("Label.font", new Font("Time New Roman", Font.PLAIN, 16));
 
@@ -121,11 +122,15 @@ public class QuanLyPhim extends JFrame implements ActionListener {
 		btnLamMoi.setActionCommand("LAM_MOI");
 		btnLamMoi.addActionListener(this);
 		btnLuu = new JButton("Lưu");
+		btnLuu.setActionCommand("LUU");
+		btnLuu.addActionListener(this);
 
 		txtTimKiem = new JTextField();
 		txtTimKiem.setBorder(null);
+		txtTimKiem.setActionCommand("SEARCH");
+		txtTimKiem.addActionListener(this);
 		ImageIcon lgTimKiem = new ImageIcon(
-				getClass().getResource("../icon/search.png"));
+				getClass().getResource("/icon/search.png"));
 		Image img = lgTimKiem.getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH);
 		JButton btnLogo = new JButton(new ImageIcon(img));
 		btnLogo.setActionCommand("SEARCH");

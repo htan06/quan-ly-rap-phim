@@ -204,7 +204,7 @@ public class ThongKeDoanhThu extends JFrame implements ActionListener {
 		txtTimKiem.addActionListener(this);
 
 		ImageIcon lgTimKiem = new ImageIcon(
-				getClass().getResource("../icon/search.png"));
+				getClass().getResource("/icon/search.png"));
 		Image img = lgTimKiem.getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH);
 		JButton btnLogo = new JButton(new ImageIcon(img));
 		btnLogo.setActionCommand("SEARCH");
