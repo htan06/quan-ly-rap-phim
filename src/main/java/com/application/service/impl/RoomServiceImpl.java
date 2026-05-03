@@ -67,18 +67,19 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<Room> getRooms() {
+    public List<Room> findAll() {
         return roomDao.findAll();
     }
 
     @Override
-    public Room getRoom(Integer id) {
+    public Room findById(Integer id) {
         return roomDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
     }
 
     @Override
     public void updateInfo(UpdateRoomInfoDTO updateRoomInfo) {
+        findById(updateRoomInfo.id());
         roomDao.updateInfo(
                 Room.builder()
                         .id(updateRoomInfo.id())
@@ -91,6 +92,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void updateStatus(Integer id, RoomStatus status) {
+        findById(id);
         roomDao.updateStatus(id, status);
     }
 }

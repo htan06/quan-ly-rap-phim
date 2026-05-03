@@ -20,11 +20,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateStatusUser(String username, UserStatus status) {
+        userDao.findByUserName(username);
         userDao.updateStatus(username, status);
     }
 
     @Override
     public void updateUserInfo(UpdateStaffInfoDTO updateStaffInfo) {
+        userDao.findByUserName(updateStaffInfo.username());
         if (!ValidData.validEmail(updateStaffInfo.email())) {
             throw new IllegalArgumentException("Email khong dung dinh dang");
         }

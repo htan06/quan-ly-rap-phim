@@ -60,6 +60,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void updateInfo(UpdateMovieInfoDTO updateMovieInfo) {
+        findById(updateMovieInfo.id());
         movieDao.updateInfo(
                 Movie.builder()
                         .title(updateMovieInfo.title())
@@ -84,6 +85,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void updateStatus(Long id, MovieStatus status) {
+        findById(id);
         movieDao.updateStatus(id, status);
     }
 }
