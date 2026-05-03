@@ -20,7 +20,6 @@ import java.util.List;
 public class RoomServiceImpl implements RoomService {
 
     private final RoomDao roomDao;
-    private final SeatDao seatDao;
 
     @Override
     public void createRoom(CreateRoomDTO createRoom) {
@@ -62,8 +61,6 @@ public class RoomServiceImpl implements RoomService {
                         .seats(seats)
                         .build()
         );
-
-        seatDao.createSeat(roomId, seats);
     }
 
     @Override
