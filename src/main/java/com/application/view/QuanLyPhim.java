@@ -1,4 +1,4 @@
-package com.application.view;
+package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,14 +25,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 
-import com.application.service.MovieService;
 import com.toedter.calendar.JDateChooser;
 import com.toedter.calendar.JTextFieldDateEditor;
 
 public class QuanLyPhim extends JFrame{
-
-    private MovieService movieService;
-
 	private JTextField txtTenPhim;
 	private JTextField txtTheLoai;
 	private JTextField txtThoiLuong;
@@ -44,12 +40,9 @@ public class QuanLyPhim extends JFrame{
 	private JTextField txtTimKiem;
 	private ImageIcon icon;
 	private DefaultTableModel model;
-
-	public QuanLyPhim(MovieService movieService) {
-        this.movieService = movieService;
-        init();
+	public QuanLyPhim() {
+		init();
 	}
-
 	public void init() {	
 		setTitle("Danh Sach Phim");
 		setSize(800, 500);
@@ -104,7 +97,6 @@ public class QuanLyPhim extends JFrame{
 		ImageIcon lgTimKiem = new ImageIcon(
                 Objects.requireNonNull(getClass().getResource("/icon/search.png"))
 			);
-
 		Image img = lgTimKiem.getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH);
 		JButton btnLogo = new JButton(new ImageIcon(img));
 		
@@ -176,8 +168,7 @@ public class QuanLyPhim extends JFrame{
 		pnlInfo.add(sc, BorderLayout.CENTER);
 		return pnlInfo;
 	}
-
-    public static void main(String[] args) {
-        new QuanLyPhim(null).setVisible(true);
-    }
+	public static void main(String[] args) {
+		new QuanLyPhim().setVisible(true);
+	}
 }
