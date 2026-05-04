@@ -1,9 +1,6 @@
 package com.application.dto.movie;
 
-import com.application.entity.enums.MovieStatus;
-
 import java.sql.Timestamp;
-import java.util.Set;
 
 public record UpdateMovieInfoDTO(
         Long id,
@@ -11,13 +8,12 @@ public record UpdateMovieInfoDTO(
         String description,
         String director,
         String cast,
-        String posterPath,
+        String genre,
+        Integer duration,
         Timestamp releaseDate,
         Timestamp endDate,
         String language,
         String subtitleLanguage,
         String country,
-        String ageRating,
-
-        Set<Integer> genresId
+        String ageRating
 ) {}

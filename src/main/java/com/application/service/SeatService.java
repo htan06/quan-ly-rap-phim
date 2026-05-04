@@ -4,8 +4,9 @@ import com.application.entity.Seat;
 import com.application.entity.enums.SeatStatus;
 import com.application.entity.enums.SeatType;
 
+import java.util.List;
+
 public interface SeatService {
-    void updatedStatus(Long id, SeatStatus status);
-    void updatedType(Long id, SeatType type);
     Seat findById(Long id);
+    List<Seat> findByRoomId(Integer id);
 }

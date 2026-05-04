@@ -58,6 +58,20 @@ public class SeatDao {
         }
     }
 
+    public List<Seat> findByRoomId(Integer roomId) {
+        String sql = "SELECT * FROM seats WHERE room_id = ?;";
+
+        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
+            statement.setLong(1, roomId);
+
+            try (ResultSet rows = statement.executeQuery()) {
+                return mapResultToObj(rows);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void updateStatus(Long id, SeatStatus status) {
         String sql = "UPDATE seats SET status = ? WHERE id = ?;";
 

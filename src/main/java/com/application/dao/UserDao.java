@@ -18,10 +18,12 @@ public class UserDao {
     private final RoleDao roleDao;
 
     public void createUser(User user) {
-        String sql = "INSERT INTO users (first_name, last_name, email, phone_number, status, username, password) VALUES (?, ?, ?, ?, ?, ?, ?);";
-        try (PreparedStatement statement = connectionDB.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        String sql = "INSERT INTO users (first_name, last_name, email, phone_number, status, username, password, role_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
-            connectionDB.setAutoCommit(false);
+        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
+
+            Role role = roleDao.findRoleByName(user.getRole().getRoleName())
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
 
             statement.setString(1, user.getFirstName());
             statement.setString(2, user.getLastName());
@@ -30,31 +32,15 @@ public class UserDao {
             statement.setString(5, user.getStatus().name());
             statement.setString(6, user.getUsername());
             statement.setString(7, user.getPassword());
+            statement.setInt(8, role.getId());
 
             int rowUpdated = statement.executeUpdate();
             if (rowUpdated == 0) {
                 throw new RuntimeException("Tao user khong thanh cong");
             }
-
-            ResultSet rows = statement.getGeneratedKeys();
-            rows.next();
-
-            long userId = rows.getLong(1);
-            int roleId = roleDao.findRoleByName(user.getRole().getRoleName())
-                            .orElseThrow(() -> new RuntimeException("Role not found"))
-                        .getId();
-            setRole(userId, roleId);
-
-            connectionDB.commit();
         } catch (SQLException e) {
-            try {
-                connectionDB.rollback();
-            } catch (SQLException ignore) {}
+            System.out.println(e.getMessage());
             throw new RuntimeException("tao user khong thanh cong");
-        } finally {
-            try {
-                connectionDB.setAutoCommit(true);
-            } catch (SQLException ignore) {}
         }
     }
 
@@ -134,7 +120,7 @@ public class UserDao {
     }
 
     public void updateInfo(UpdateStaffInfoDTO updateStaffInfo) {
-        String sql ="UPDATE users SET first_name = ?, last_name = ?, email = ?, phone_number, updated_at = GETDATE() = ? WHERE username = ?";
+        String sql ="UPDATE users SET first_name = ?, last_name = ?, email = ?, phone_number = ?, updated_at = GETDATE() WHERE username = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
 
@@ -163,22 +149,6 @@ public class UserDao {
             int rows = statement.executeUpdate();
             if (rows == 0) {
                 throw new RuntimeException("cap nhat status khong thanh cong");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void setRole(Long userId, Integer roleId) {
-        String sql = "INSERT INTO user_has_role (user_id, role_id) VALUES (?, ?);";
-
-        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
-            statement.setLong(1, userId);
-            statement.setInt(2, roleId);
-
-            int rows = statement.executeUpdate();
-            if (rows == 0) {
-                throw new RuntimeException("set role cho user khong thanh cong");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

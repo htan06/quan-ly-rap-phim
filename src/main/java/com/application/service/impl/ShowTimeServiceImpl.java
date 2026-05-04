@@ -10,6 +10,9 @@ import com.application.service.ShowTimeService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -27,10 +30,18 @@ public class ShowTimeServiceImpl implements ShowTimeService {
                         .room(Room.builder()
                                 .id(createShowTimeDTO.roomId())
                                 .build())
+                        .price(createShowTimeDTO.price())
                         .startTime(createShowTimeDTO.startTime())
                         .endTime(createShowTimeDTO.endTime())
                         .build()
         );
+    }
+
+    @Override
+    public List<ShowTime> findByDate(LocalDate date) {
+        Timestamp start = Timestamp.valueOf(date.atStartOfDay()); // 00:00:00
+        Timestamp end = Timestamp.valueOf(date.atTime(LocalTime.MAX)); // 23:59:59
+        return showTimeDao.findByDateRange(start, end);
     }
 
     @Override
@@ -60,6 +71,7 @@ public class ShowTimeServiceImpl implements ShowTimeService {
                         .room(Room.builder()
                                 .id(updateShowTimeDTO.roomId())
                                 .build())
+                        .price(updateShowTimeDTO.price())
                         .startTime(updateShowTimeDTO.startTime())
                         .endTime(updateShowTimeDTO.endTime())
                         .build()

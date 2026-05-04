@@ -3,11 +3,9 @@ package com.application.service.impl;
 import com.application.dao.MovieDao;
 import com.application.dto.movie.CreateMovieDTO;
 import com.application.dto.movie.UpdateMovieInfoDTO;
-import com.application.entity.Genre;
 import com.application.entity.Movie;
 import com.application.entity.enums.MovieStatus;
 import com.application.service.MovieService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -26,7 +24,8 @@ public class MovieServiceImpl implements MovieService {
                         .description(createMovie.description())
                         .director(createMovie.director())
                         .cast(createMovie.cast())
-                        .posterPath(createMovie.posterPath())
+                        .genre(createMovie.genre())
+                        .duration(createMovie.duration())
                         .releaseDate(createMovie.releaseDate())
                         .endDate(createMovie.endDate())
                         .language(createMovie.language())
@@ -34,11 +33,6 @@ public class MovieServiceImpl implements MovieService {
                         .country(createMovie.country())
                         .ageRating(createMovie.ageRating())
                         .status(createMovie.status())
-                        .genres(createMovie.genresId().stream().map(gid ->
-                                Genre.builder()
-                                        .id(gid)
-                                        .build()
-                        ).collect(Collectors.toSet()))
                         .build()
         );
     }
@@ -64,22 +58,19 @@ public class MovieServiceImpl implements MovieService {
         findById(updateMovieInfo.id());
         movieDao.updateInfo(
                 Movie.builder()
+                        .id(updateMovieInfo.id())
                         .title(updateMovieInfo.title())
                         .description(updateMovieInfo.description())
                         .director(updateMovieInfo.director())
                         .cast(updateMovieInfo.cast())
-                        .posterPath(updateMovieInfo.posterPath())
+                        .genre(updateMovieInfo.genre())
+                        .duration(updateMovieInfo.duration())
                         .releaseDate(updateMovieInfo.releaseDate())
                         .endDate(updateMovieInfo.endDate())
                         .language(updateMovieInfo.language())
                         .subtitleLanguage(updateMovieInfo.subtitleLanguage())
                         .country(updateMovieInfo.country())
                         .ageRating(updateMovieInfo.ageRating())
-                        .genres(updateMovieInfo.genresId().stream().map(gid ->
-                                Genre.builder()
-                                        .id(gid)
-                                        .build()
-                        ).collect(Collectors.toSet()))
                         .build()
         );
     }

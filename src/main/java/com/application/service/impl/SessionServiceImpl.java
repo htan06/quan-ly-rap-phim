@@ -30,11 +30,6 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public String getSessionId() {
-        return session.getId();
-    }
-
-    @Override
     public Session getCurrent() {
         return session;
     }

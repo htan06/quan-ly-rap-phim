@@ -73,12 +73,6 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking findFullInfoById(Long id) {
-        return bookingDao.findFullInfoById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
-    }
-
-    @Override
     public void updateStatus(Long id, BookingStatus status) {
         findById(id);
         bookingDao.updateStatus(id, status);
