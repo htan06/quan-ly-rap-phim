@@ -1,9 +1,9 @@
 package com.application.dao;
 
-import com.application.entity.Genre;
 import com.application.entity.Movie;
 import com.application.entity.enums.MovieStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 import java.sql.*;
 import java.util.*;
@@ -19,7 +19,8 @@ public class MovieDao {
                 "    description, " +
                 "    director, " +
                 "    cast, " +
-                "    poster_path, " +
+                "    genre, " +
+                "    duration, " +
                 "    release_date, " +
                 "    end_date, " +
                 "    language, " +
@@ -27,60 +28,43 @@ public class MovieDao {
                 "    country, " +
                 "    age_rating, " +
                 "    status " +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            connectionDB.setAutoCommit(false);
 
             statement.setString(1, movie.getTitle());
             statement.setString(2, movie.getDescription());
             statement.setString(3, movie.getDirector());
             statement.setString(4, movie.getCast());
-            statement.setString(5, movie.getPosterPath());
-            statement.setTimestamp(6, movie.getReleaseDate());
-            statement.setTimestamp(7, movie.getEndDate());
-            statement.setString(8, movie.getLanguage());
-            statement.setString(9, movie.getSubtitleLanguage());
-            statement.setString(10, movie.getCountry());
-            statement.setString(11, movie.getAgeRating());
-            statement.setString(12, movie.getStatus().name());
+            statement.setString(5, movie.getGenre());
+            statement.setInt(6, movie.getDuration());
+            statement.setTimestamp(7, movie.getReleaseDate());
+            statement.setTimestamp(8, movie.getEndDate());
+            statement.setString(9, movie.getLanguage());
+            statement.setString(10, movie.getSubtitleLanguage());
+            statement.setString(11, movie.getCountry());
+            statement.setString(12, movie.getAgeRating());
+            statement.setString(13, movie.getStatus().name());
 
             int rowsUpdated = statement.executeUpdate();
             if (rowsUpdated == 0) {
-                throw new RuntimeException("Tao room khong thanh cong");
+                throw new RuntimeException("Tao movie khong thanh cong");
             }
 
             ResultSet rows = statement.getGeneratedKeys();
             rows.next();
             long movieId = rows.getLong(1);
-
-            List<Integer> genreIds = movie.getGenres().stream().map(Genre::getId).toList();
-            setMovieGenre(movieId, genreIds);
-
-            connectionDB.commit();
-
+            rows.close();
             return movieId;
         } catch (SQLException e) {
-            try {
-                connectionDB.rollback();
-            } catch (SQLException ignore) {
-            }
+            System.out.println(e.getMessage());
             throw new RuntimeException("Tao movie khong thanh cong");
-        } finally {
-            try {
-                connectionDB.setAutoCommit(true);
-            } catch (SQLException ignore) {
-            }
         }
     }
 
     public List<Movie> findAll() {
         String sql =
-                "SELECT m.*, g.id AS genre_id, g.name AS genre_name " +
-                        "FROM movies m " +
-                        "LEFT JOIN movie_genre mg ON m.id = mg.movie_id " +
-                        "LEFT JOIN genres g ON mg.genre_id = g.id";
+                "SELECT * FROM movies";
 
         try (Statement statement = connectionDB.createStatement()) {
             ResultSet rows = statement.executeQuery(sql);
@@ -92,30 +76,24 @@ public class MovieDao {
 
     public List<Movie> findAllByStatus(MovieStatus status) {
         String sql =
-                "SELECT m.*, g.id AS genre_id, g.name AS genre_name " +
-                        "FROM movies m " +
-                        "LEFT JOIN movie_genre mg ON m.id = mg.movie_id " +
-                        "LEFT JOIN genres g ON mg.genre_id = g.id " +
-                        "WHERE m.status = ?";
+                "SELECT * FROM movies WHERE status = ? ORDER BY id";
 
-        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
-            statement.setString(1, status.name());
+        try (PreparedStatement stmt = connectionDB.prepareStatement(sql)) {
 
-            ResultSet rows = statement.executeQuery();
-            return mapResultToObj(rows);
+            stmt.setString(1, status.name());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return mapResultToObj(rs);
+            }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Find movies by status failed", e);
         }
     }
 
     public Optional<Movie> findById(Long id) {
         String sql =
-                "SELECT m.*, g.id AS genre_id, g.name AS genre_name " +
-                        "FROM movies m " +
-                        "LEFT JOIN movie_genre mg ON m.id = mg.movie_id " +
-                        "LEFT JOIN genres g ON mg.genre_id = g.id " +
-                        "WHERE m.id = ?";
+                "SELECT * FROM movies WHERE id = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
             statement.setLong(1, id);
@@ -138,14 +116,14 @@ public class MovieDao {
                 "description = ?, " +
                 "director = ?, " +
                 "cast = ?, " +
-                "poster_path = ?, " +
+                "genre = ?, " +
+                "duration = ?, " +
                 "release_date = ?, " +
                 "end_date = ?, " +
                 "language = ?, " +
                 "subtitle_language = ?, " +
                 "country = ?, " +
-                "age_rating = ?, " +
-                "status = ? " +
+                "age_rating = ? " +
                 "WHERE id = ?";
 
         try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
@@ -156,31 +134,29 @@ public class MovieDao {
             statement.setString(2, movie.getDescription());
             statement.setString(3, movie.getDirector());
             statement.setString(4, movie.getCast());
-            statement.setString(5, movie.getPosterPath());
-            statement.setTimestamp(6, movie.getReleaseDate());
-            statement.setTimestamp(7, movie.getEndDate());
-            statement.setString(8, movie.getLanguage());
-            statement.setString(9, movie.getSubtitleLanguage());
-            statement.setString(10, movie.getCountry());
-            statement.setString(11, movie.getAgeRating());
-            statement.setString(12, movie.getStatus().name());
+            statement.setString(5, movie.getGenre());
+            statement.setInt(6, movie.getDuration());
+            statement.setTimestamp(7, movie.getReleaseDate());
+            statement.setTimestamp(8, movie.getEndDate());
+            statement.setString(9, movie.getLanguage());
+            statement.setString(10, movie.getSubtitleLanguage());
+            statement.setString(11, movie.getCountry());
+            statement.setString(12, movie.getAgeRating());
             statement.setLong(13, movie.getId());
 
             int rows = statement.executeUpdate();
             if (rows == 0) {
-                throw new RuntimeException("cap nhat movie info khong thanh cong");
+                throw new RuntimeException("Cap nhat movie info khong thanh cong");
             }
-
-            List<Integer> genreIds = movie.getGenres().stream().map(Genre::getId).toList();
-            setMovieGenre(movie.getId(), genreIds);
 
             connectionDB.commit();
         } catch (SQLException e) {
             try {
                 connectionDB.rollback();
-            } catch (SQLException ignore) {
-            }
-            throw new RuntimeException("Tao movie khong thanh cong");
+            } catch (SQLException ignore) {}
+
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Cap nhat movie khong thanh cong");
         } finally {
             try {
                 connectionDB.setAutoCommit(true);
@@ -206,66 +182,31 @@ public class MovieDao {
     }
 
     private List<Movie> mapResultToObj(ResultSet rows) throws SQLException {
-        Map<Long, Movie> movieMap = new LinkedHashMap<>();
+        List<Movie> movies = new ArrayList<>();
 
         while (rows.next()) {
-            Long movieId = rows.getLong("id");
 
-            Movie movie = movieMap.get(movieId);
+            Movie movie = Movie.builder()
+                    .id(rows.getLong("id"))
+                    .title(rows.getString("title"))
+                    .description(rows.getString("description"))
+                    .director(rows.getString("director"))
+                    .cast(rows.getString("cast"))
+                    .genre(rows.getString("genre"))
+                    .duration(rows.getInt("duration"))
+                    .releaseDate(rows.getTimestamp("release_date"))
+                    .endDate(rows.getTimestamp("end_date"))
+                    .language(rows.getString("language"))
+                    .subtitleLanguage(rows.getString("subtitle_language"))
+                    .country(rows.getString("country"))
+                    .ageRating(rows.getString("age_rating"))
+                    .status(MovieStatus.valueOf(rows.getString("status")))
+                    .createdAt(rows.getTimestamp("created_at"))
+                    .updatedAt(rows.getTimestamp("updated_at"))
+                    .build();
 
-            if (movie == null) {
-                movie = Movie.builder()
-                        .id(movieId)
-                        .title(rows.getString("title"))
-                        .description(rows.getString("description"))
-                        .director(rows.getString("director"))
-                        .cast(rows.getString("cast"))
-                        .posterPath(rows.getString("poster_path"))
-                        .releaseDate(rows.getTimestamp("release_date"))
-                        .endDate(rows.getTimestamp("end_date"))
-                        .language(rows.getString("language"))
-                        .subtitleLanguage(rows.getString("subtitle_language"))
-                        .country(rows.getString("country"))
-                        .ageRating(rows.getString("age_rating"))
-                        .status(MovieStatus.valueOf(rows.getString("status")))
-                        .createdAt(rows.getTimestamp("created_at"))
-                        .updatedAt(rows.getTimestamp("updated_at"))
-                        .genres(new HashSet<>())
-                        .build();
-
-                movieMap.put(movieId, movie);
-            }
-
-            // add genre nếu có
-            long genreId = rows.getLong("genre_id");
-            if (!rows.wasNull()) {
-                Genre genre = Genre.builder()
-                        .id((int) genreId)
-                        .name(rows.getString("genre_name"))
-                        .build();
-
-                movie.getGenres().add(genre);
-            }
+            movies.add(movie);
         }
-
-        return new ArrayList<>(movieMap.values());
-    }
-
-    private void setMovieGenre(Long movieId, List<Integer> genreIds) {
-        String sql = "INSERT INTO movie_genre (movie_id, genre_id) VALUES (?, ?)";
-
-        try (PreparedStatement statement = connectionDB.prepareStatement(sql)) {
-            for (Integer genreId : genreIds) {
-                statement.setLong(1, movieId);
-                statement.setLong(2, genreId);
-                statement.addBatch();
-            }
-            int rowUpdated = statement.executeUpdate();
-            if (rowUpdated == 0) {
-                throw new RuntimeException("set movie genre khong thanh cong");
-            }
-        } catch (SQLException ex) {
-            throw new RuntimeException("Set genre cho movie khong thanh cong");
-        }
+        return movies;
     }
 }

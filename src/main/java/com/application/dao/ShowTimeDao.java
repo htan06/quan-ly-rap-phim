@@ -34,6 +34,29 @@ public class ShowTimeDao {
         }
     }
 
+    // Thêm vào ShowTimeDao.java
+
+    public List<ShowTime> findByDateRange(Timestamp start, Timestamp end) {
+        String sql = """
+            SELECT st.id, st.movie_id, st.price, st.start_time, st.end_time,
+                   st.created_at, st.updated_at,
+                   r.id AS room_id, r.name AS room_name,
+                   r.room_type, r.capacity, r.status AS room_status
+            FROM show_times st
+            JOIN rooms r ON st.room_id = r.id
+            WHERE st.start_time >= ? AND st.start_time <= ?
+            ORDER BY st.start_time ASC
+            """;
+        try (PreparedStatement ps = connectionDB.prepareStatement(sql)) {
+            ps.setTimestamp(1, start);
+            ps.setTimestamp(2, end);
+            ResultSet rs = ps.executeQuery();
+            return mapRows(rs, false);
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi tìm kiếm lịch chiếu theo ngày", e);
+        }
+    }
+
     public List<ShowTime> findAll() {
         // Không JOIN seats ở đây để tránh data lớn — chỉ lấy room cơ bản
         String sql = """
@@ -59,12 +82,9 @@ public class ShowTimeDao {
                 SELECT st.id, st.movie_id, st.price, st.start_time, st.end_time,
                        st.created_at, st.updated_at,
                        r.id   AS room_id,   r.name      AS room_name,
-                       r.room_type,         r.capacity,  r.status AS room_status,
-                       se.id  AS seat_id,   se.name     AS seat_name,
-                       se.status AS seat_status,         se.type  AS seat_type
+                       r.room_type,         r.capacity,  r.status AS room_status
                 FROM show_times st
                 JOIN rooms r  ON st.room_id = r.id
-                LEFT JOIN seats se ON se.room_id = r.id
                 WHERE st.id = ?
                 """;
 
@@ -139,7 +159,6 @@ public class ShowTimeDao {
                         .roomType(RoomType.valueOf(rs.getString("room_type")))
                         .capacity(rs.getInt("capacity"))
                         .status(RoomStatus.valueOf(rs.getString("room_status")))
-                        .seats(withSeats ? new ArrayList<>() : null)
                         .build();
 
                 ShowTime st = ShowTime.builder()
@@ -154,20 +173,6 @@ public class ShowTimeDao {
                         .build();
 
                 map.put(stId, st);
-            }
-
-            // Gom ghế nếu có JOIN seats
-            if (withSeats) {
-                long seatId = rs.getLong("seat_id");
-                if (seatId != 0) {          // LEFT JOIN → có thể null
-                    Seat seat = Seat.builder()
-                            .id(seatId)
-                            .name(rs.getString("seat_name"))
-                            .status(SeatStatus.valueOf(rs.getString("seat_status")))
-                            .type(SeatType.valueOf(rs.getString("seat_type")))
-                            .build();
-                    map.get(stId).getRoom().getSeats().add(seat);
-                }
             }
         }
 

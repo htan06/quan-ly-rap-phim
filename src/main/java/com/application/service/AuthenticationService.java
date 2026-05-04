@@ -8,8 +8,6 @@ public interface AuthenticationService {
 
     void changePassword(String username, String newPassword);
 
-    void setRoleUser(Long userId, Integer roleId);
-
     boolean login(UserLoginRequest userLogin);
 
     void logout();

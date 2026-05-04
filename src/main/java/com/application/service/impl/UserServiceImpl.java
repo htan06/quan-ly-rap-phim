@@ -17,12 +17,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAll() {
-        return List.of();
+        return userDao.findAll();
     }
 
     @Override
     public User findById(Long id) {
-        return null;
+        return userDao.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override

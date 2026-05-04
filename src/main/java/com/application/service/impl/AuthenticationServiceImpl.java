@@ -3,6 +3,7 @@ package com.application.service.impl;
 import com.application.dao.UserDao;
 import com.application.dto.auth.UserLoginRequest;
 import com.application.dto.user.CreateStaffDTO;
+import com.application.entity.Role;
 import com.application.entity.User;
 import com.application.entity.enums.UserStatus;
 import com.application.service.AuthenticationService;
@@ -36,6 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .username(createStaff.username())
                 .password(BCrypt.hashpw(createStaff.password(), BCrypt.gensalt(10)))
                 .status(UserStatus.ACTIVE)
+                .role(Role.builder().roleName("STAFF").build())
                 .build();
 
         userDao.createUser(user);
@@ -45,11 +47,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void changePassword(String username, String newPassword) {
         String hashPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(10));
         userDao.changePassword(username, hashPassword);
-    }
-
-    @Override
-    public void setRoleUser(Long userId, Integer roleId) {
-        userDao.setRole(userId, roleId);
     }
 
     @Override

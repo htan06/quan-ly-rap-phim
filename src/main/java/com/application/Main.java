@@ -1,10 +1,9 @@
 package com.application;
 
 import com.application.dao.*;
-import com.application.dto.user.CreateStaffDTO;
 import com.application.service.*;
 import com.application.service.impl.*;
-import com.application.view.AppUI;
+import com.application.view.LoginFrame;
 
 import java.sql.Connection;
 
@@ -17,11 +16,10 @@ public class Main {
         RoleDao roleDao = new RoleDao(connectionDb);
         UserDao userDao = new UserDao(connectionDb, roleDao);
         SeatDao seatDao = new SeatDao(connectionDb);
-        RoomDao roomDao = new RoomDao(connectionDb, seatDao);
+        RoomDao roomDao = new RoomDao(connectionDb);
         MovieDao movieDao = new MovieDao(connectionDb);
         ShowTimeDao showTimeDao = new ShowTimeDao(connectionDb);
         BookingDao bookingDao = new BookingDao(connectionDb);
-        MembershipDao membershipDao = new MembershipDao(connectionDb);
         InvoiceDao invoiceDao = new InvoiceDao(connectionDb);
 
         // ===== SERVICE =====
@@ -34,22 +32,22 @@ public class Main {
         MovieService movieService = new MovieServiceImpl(movieDao);
         ShowTimeService showTimeService = new ShowTimeServiceImpl(showTimeDao);
         BookingService bookingService = new BookingServiceImpl(bookingDao, showTimeService);
-        MembershipService membershipService = new MembershipServiceImpl(membershipDao);
         InvoiceService invoiceService = new InvoiceService(invoiceDao);
 
-        AppUI appUI = new AppUI(
-                bookingService,
-                userService,
-                movieService,
-                authenticationService,
+        AppContext context = new AppContext(
                 sessionService,
-                showTimeService,
+                userService,
+                authenticationService,
                 seatService,
                 roomService,
-                membershipService,
+                movieService,
+                showTimeService,
+                bookingService,
                 invoiceService
         );
 
-        appUI.start();
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            new LoginFrame(context).setVisible(true);
+        });
     }
 }

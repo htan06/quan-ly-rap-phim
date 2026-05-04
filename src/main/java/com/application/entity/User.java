@@ -13,19 +13,12 @@ import java.util.Set;
 @SuperBuilder
 public class User extends BaseEntity<Long> {
     private String firstName;
-
     private String lastName;
-
     private String email;
-
     private String phoneNumber;
-
     private UserStatus status;
-
     private String username;
-
     private String password;
-
     private Role role;
 
     @Override
